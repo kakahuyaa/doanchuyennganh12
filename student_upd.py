@@ -11,6 +11,10 @@ from time import strftime
 import cv2
 import os
 mydata=[]
+import tkinter as tk
+from tkinter import filedialog
+import pandas as pd
+import pymysql
 class Student:
     def __init__(self,root):
         self.root=root
@@ -77,7 +81,7 @@ class Student:
         main_frame = Frame(bg_img, bd=2, bg="white")
         main_frame.place(x=23, y=102, width=1482, height=671)
 
-        #left_label
+    #left_label
         self.getNextid()
         Left_frame=LabelFrame(main_frame,bd=2,bg="white",font=("times new roman",12,"bold"))
         Left_frame.place(x=10,y=10,width=730,height=646)
@@ -256,6 +260,13 @@ class Student:
                                 width=35)
         update_photo_btn.grid(row=1, column=1)
 
+
+
+        import_button = tk.Button(root, text="Import thông tin sinh viên", command=self.import_csv_to_mysql,
+                                  font=("times new roman", 13, "bold"), bg="#38a6f0", fg="white",
+                                  width=35)
+        import_button.pack(side=tk.BOTTOM, anchor=tk.SW, padx=50,
+                           pady=30)  # Đặt nút ở góc dưới bên trái và thêm khoảng cách ngang và dọc
 
 
         # --------------------------right_label-------------------------
@@ -447,6 +458,50 @@ class Student:
         self.StudentTable.pack(fill=BOTH, expand=1)
         self.StudentTable.bind("<ButtonRelease>", self.get_cursorClass)
         self.fetch_Classdata()
+
+    def import_csv_to_mysql(self):
+        # Mở hộp thoại để chọn file CSV
+        filename = filedialog.askopenfilename(initialdir="/", title="Select CSV file",
+                                              filetypes=[("CSV files", "*.csv")])
+
+        if filename:
+            try:
+                # Đọc dữ liệu từ file CSV
+                df = pd.read_csv(filename)
+
+                # Xử lý giá trị NaN trong DataFrame
+                df = df.fillna('')  # Thay thế các giá trị NaN bằng chuỗi rỗng
+
+                # Kết nối đến cơ sở dữ liệu MySQL
+                conn = pymysql.connect(
+                    host='localhost',
+                    user='root',
+                    password='',
+                    database='face_recognizer',
+                    port=3306
+                )
+                cursor = conn.cursor()
+
+                # Lặp qua từng dòng trong DataFrame và chèn dữ liệu vào cơ sở dữ liệu MySQL
+                for index, row in df.iterrows():
+                    sql = """INSERT INTO student (Student_id, Dep, course, Year, Semester, Name, Class, Roll, Gender, Dob, Email, Phone, Address, PhotoSample) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                    val = (
+                        row['Student_id'], row['Dep'], row['course'], row['Year'], row['Semester'], row['Name'],
+                        row['Class'],
+                        row['Roll'], row['Gender'], row['Dob'], row['Email'], row['Phone'], row['Address'],
+                        row['PhotoSample']
+                    )
+                    cursor.execute(sql, val)
+
+                # Commit các thay đổi vào cơ sở dữ liệu
+                conn.commit()
+                cursor.close()
+                conn.close()
+
+                print("Import thành công vào cơ sở dữ liệu.")
+            except Exception as e:
+                print("Import thất bại:", e)
 
     #============function decration===============
     def slider(self):
@@ -924,7 +979,7 @@ class Student:
                     conn.close()
                 except Exception as es:
                     messagebox.showerror("Lỗi", f"Due To:{str(es)}", parent=self.root)
-if __name__=="__main__":
-    root=Tk() #khoi tao cua so va gan root vao
-    obj=Student(root)
-    root.mainloop()# cua so hien len
+if __name__ == "__main__":
+    root = Tk()  # Khởi tạo cửa sổ và gán vào root
+    obj = Student(root)
+    root.mainloop()  # Cửa sổ hiển thị
