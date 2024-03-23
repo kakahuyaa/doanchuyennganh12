@@ -1,0 +1,24 @@
+                                                              Xây dựng hệ thống điểm danh bằng nhận diện khuôn mặt 
+
+Cách sử dụng: 
+ cài đặt python 3.6.5 trở nên 
+ tải xampp ,cài đặt và chạy ứng dụng rồi đăng nhập vào localhosst tạo thư mục tênface_recognizer ,nhập file face_recognizer.sql vào 
+ chạy các thư viện sau đây:
+   py -m pip install  Babel                 2.14.0
+                      mysql-connector       2.2.9
+                      numpy                 1.24.4
+                      opencv-contrib-python 4.9.0.80
+                      opencv-python         4.9.0.80
+                      pandas                2.0.3
+                      Pillow                8.4.0
+                      pip                   23.2.1
+                      PyMySQL               1.1.0
+                      python-dateutil       2.9.0.post0
+                      pytz                  2023.3.post1
+                      setuptools            59.6.0
+                      six                   1.16.0
+                      tkcalendar            1.6.1
+                      tzdata                2024.1
+                      wheel                 0.41.2
+
+ 
